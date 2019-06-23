@@ -2,3 +2,5 @@ package: .
 import:
 - package: github.com/labstack/echo
   version: ~3.3.10
+- package: gopkg.in/alecthomas/kingpin.v2
+  version: ^2.2.6

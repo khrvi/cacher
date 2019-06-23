@@ -1,6 +1,46 @@
-hash: 7a76b18d0695ecb456700216a3f65f43eec351373e101fe43c5d86fc5df60193
-updated: 2019-06-22T01:00:43.365006+03:00
+hash: d5c61b099804e986a43073c89b3b41d34438eaf794fa1ec9c49d432f1c34659a
+updated: 2019-06-24T00:25:18.278206+03:00
 imports:
+- name: github.com/alecthomas/template
+  version: b867cc6ab45cece8143cfcc6fc9c77cf3f2c23c0
+  subpackages:
+  - parse
+- name: github.com/alecthomas/units
+  version: 6b4e7dc5e3143b85ea77909c72caf89416fc2915
+- name: github.com/dgrijalva/jwt-go
+  version: 5e25c22bd5d6de03265bbe5462dcd162f85046f6
 - name: github.com/labstack/echo
   version: 38772c686c76b501f94bd6cd5b77f5842e93b559
+  subpackages:
+  - middleware
+- name: github.com/labstack/gommon
+  version: d700b06ce5f78800a08e16a7288a4cca389a6e83
+  subpackages:
+  - bytes
+  - color
+  - log
+  - random
+- name: github.com/mattn/go-colorable
+  version: 8029fb3788e5a4a9c00e415f586a6d033f5d38b3
+- name: github.com/mattn/go-isatty
+  version: 6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c
+- name: github.com/valyala/bytebufferpool
+  version: cdfbe9377474227bb42120c1e22fd4433e7f69bf
+- name: github.com/valyala/fasttemplate
+  version: 8b5e4e491ab636663841c42ea3c5a9adebabaf36
+- name: golang.org/x/crypto
+  version: f99c8df09eb5bff426315721bfa5f16a99cad32c
+  subpackages:
+  - acme
+  - acme/autocert
+- name: golang.org/x/net
+  version: 66f0418ca41253f8d1a024eb9754e9441a8e79b9
+  subpackages:
+  - idna
+- name: golang.org/x/sys
+  version: 2d6f6f883a06fc0d5f4b14a81e4c28705ea64c15
+  subpackages:
+  - unix
+- name: gopkg.in/alecthomas/kingpin.v2
+  version: 947dcec5ba9c011838740e680966fd7087a71d0d
 testImports: []

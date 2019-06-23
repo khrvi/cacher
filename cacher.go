@@ -4,16 +4,21 @@ import (
 	"fmt"
 
 	"./cache"
+	"./config"
 )
 
 var cacheManager cache.Cache
 
 func main() {
 	var err error
-	cacheProvider := "mutex-map"
+	cacheProvider := *config.CacheType
 	cacheManager, err = cache.New(cacheProvider)
 	if err != nil {
 		fmt.Printf(err.Error())
 	}
-	startHTTPServer()
+	if *config.Interface == "http" {
+		startHTTPServer()
+	} else {
+		//
+	}
 }

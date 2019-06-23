@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"./config"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 )
@@ -30,7 +31,7 @@ func startHTTPServer() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Use(middleware.KeyAuth(func(key string, c echo.Context) (bool, error) {
-		return key == "0123456789", nil
+		return key == *config.AuthToken, nil
 	}))
 
 	// Routes
@@ -42,7 +43,8 @@ func startHTTPServer() {
 	// e.Post("/invalidate_cache", invalidateCache)s
 
 	// Start server
-	e.Logger.Fatal(e.Start(":1323"))
+	address := fmt.Sprintf("%s:%s", *config.ServerIP, *config.ServerPort)
+	e.Logger.Fatal(e.Start(address))
 }
 
 func healthCheck(c echo.Context) error {
