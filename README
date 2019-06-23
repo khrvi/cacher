@@ -6,6 +6,7 @@ curl \
   -X POST \
   http://localhost:1323/ \
   -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer 0123456789' \
   -d '{"key":"test_string","value":"test_value", "ttl": 30}'
 
 Set new value of array:
@@ -13,6 +14,7 @@ curl \
   -X POST \
   http://localhost:1323/ \
   -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer 0123456789' \
   -d '{"key":"test_array","value":["one","two","three"]}'
 
 Set new value of map:
@@ -20,4 +22,5 @@ Set new value of map:
   -X POST \
   http://localhost:1323/ \
   -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer 0123456789' \
   -d '{"key":"test_map","value":{"test":1}}'
