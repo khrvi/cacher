@@ -16,9 +16,10 @@ func main() {
 	if err != nil {
 		fmt.Printf(err.Error())
 	}
+
 	if *config.Interface == "http" {
 		startHTTPServer()
 	} else {
-		//
+		startTelNetServer()
 	}
 }
