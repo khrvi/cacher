@@ -24,7 +24,7 @@ func New() *Storage {
 	}
 }
 
-func (s Storage) Set(key string, value interface{}, ttl int64) error {
+func (s *Storage) Set(key string, value interface{}, ttl int64) error {
 	data, err := json.Marshal(value)
 	if err != nil {
 		return err
@@ -41,7 +41,7 @@ func (s Storage) Set(key string, value interface{}, ttl int64) error {
 	return nil
 }
 
-func (s Storage) Get(key string) (interface{}, int64, bool, error) {
+func (s *Storage) Get(key string) (interface{}, int64, bool, error) {
 	s.mu.RLock()
 	record, found := s.values[key]
 	s.mu.RUnlock()
@@ -61,9 +61,7 @@ func (s Storage) Get(key string) (interface{}, int64, bool, error) {
 	return data, record.ExpiredAt, true, nil
 }
 
-func (s Storage) Delete(key string) error {
-	// Try to get shard.
-	// shard := m.GetShard(key)
+func (s *Storage) Delete(key string) error {
 	s.mu.Lock()
 	delete(s.values, key)
 	s.mu.Unlock()

@@ -3,7 +3,8 @@ package cache
 import (
 	"fmt"
 
-	ms "./mutex_map"
+	mm "./mutex_map"
+	sm "./sync_map"
 )
 
 type (
@@ -31,11 +32,11 @@ func (cme CacheManagerError) Error() string {
 func New(cacheType string) (*CacheManager, error) {
 	if cacheType == "mutex-map" {
 		return &CacheManager{
-			Provider: ms.New(),
+			Provider: mm.New(),
 		}, nil
 	} else if cacheType == "sync-map" {
 		return &CacheManager{
-			Provider: ms.New(),
+			Provider: sm.New(),
 		}, nil
 	}
 
