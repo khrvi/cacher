@@ -41,7 +41,7 @@ func New(cacheType string) (*CacheManager, error) {
 		}, nil
 	}
 
-	return new(CacheManager), CacheManagerError{"mutex-map"}
+	return nil, CacheManagerError{cacheType}
 }
 
 func (cm *CacheManager) Get(key string) (interface{}, int64, bool, error) {

@@ -1,5 +1,5 @@
-hash: 040683840666019106b0cfce245d66dc43919eaf02b762a03030368cfd86a46a
-updated: 2019-06-24T02:30:42.4015+03:00
+hash: 6cfa42a7300e807aa711d79e72c01243d6f9bc024a4ce50d1c4a2cccd985b0cc
+updated: 2019-06-25T04:20:11.498547+03:00
 imports:
 - name: github.com/alecthomas/template
   version: b867cc6ab45cece8143cfcc6fc9c77cf3f2c23c0
@@ -24,8 +24,16 @@ imports:
   version: 8029fb3788e5a4a9c00e415f586a6d033f5d38b3
 - name: github.com/mattn/go-isatty
   version: 6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c
+- name: github.com/reiver/go-oi
+  version: 431c83978379297f04f85f6eb94f129f25ab741d
 - name: github.com/reiver/go-telnet
   version: 9ff0b2ab096ebe42bf8e2ffd1366e7ed2223b04c
+  subpackages:
+  - telsh
+- name: github.com/stretchr/testify
+  version: ffdc059bfe9ce6a4e144ba849dbedead332c6053
+  subpackages:
+  - assert
 - name: github.com/valyala/bytebufferpool
   version: cdfbe9377474227bb42120c1e22fd4433e7f69bf
 - name: github.com/valyala/fasttemplate

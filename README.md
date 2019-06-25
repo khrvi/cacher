@@ -1,5 +1,35 @@
 # Cacher - A Go (golang) In-memory cache with Telnet/HTTP interface
 
+## Build app
+```
+> ./Makefile cacher
+> ./cacher --help
+usage: cacher [<flags>]
+
+In-memory Redis-like cache.
+
+Flags:
+      --help                    Show context-sensitive help (also try --help-long and --help-man).
+  -i, --interface="http"        Either http or telnet interface enable.
+  -a, --server=127.0.0.1        Server address.
+  -p, --port="1323"             Server port.
+      --auth_token=AUTH_TOKEN   Bearer Authentication Token.
+  -t, --cache_type="mutex-map"  Select cache implementation.
+      --version                 Show application version.
+
+> ./cacher -t sync-map --auth_token 0123456789
+```
+
+## Run test
+```
+> ./Makefile test
+```
+
+## Run benchmarks
+```
+> ./Makefile bench
+```
+
 ## HTTP interface (CURL examples):
 
 #### Set new value of string:
