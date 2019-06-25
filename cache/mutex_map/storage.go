@@ -67,3 +67,13 @@ func (s *Storage) Delete(key string) error {
 	s.mu.Unlock()
 	return nil
 }
+
+func (s *Storage) GetKeys() ([]string, error) {
+	keys := make([]string, 0)
+	s.mu.RLock()
+	for key := range s.values {
+		keys = append(keys, key)
+	}
+	s.mu.RUnlock()
+	return keys, nil
+}

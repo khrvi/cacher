@@ -32,6 +32,11 @@ curl \
   -d '{"key":"test_map","value":{"test":1}}'
 ```
 
+#### Get all cache keys
+```
+curl http://localhost:1323/keys -H 'Authorization: Bearer 0123456789'
+```
+
 ## Telnet interface:
 ```
 > telnet localhost 5555
@@ -52,4 +57,9 @@ Note: whitespace is used as params separator
 #### Set new value of map: 
 ```
 > set test_map {"test":1} 3600
+```
+
+#### Get all cache keys
+```
+> keys
 ```

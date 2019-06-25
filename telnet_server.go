@@ -43,6 +43,10 @@ func startTelNetServer() {
 	commandProducer = telsh.ProducerFunc(deleteValuePruducer)
 	shellHandler.Register(commandName, commandProducer)
 
+	commandName = "keys"
+	commandProducer = telsh.ProducerFunc(getKeysPruducer)
+	shellHandler.Register(commandName, commandProducer)
+
 	address := fmt.Sprintf("%s:%s", *config.ServerIP, *config.ServerPort)
 	if err := telnet.ListenAndServe(address, shellHandler); nil != err {
 		panic(err)
@@ -122,7 +126,7 @@ func setValueHandler(stdin io.ReadCloser, stdout io.WriteCloser, stderr io.Write
 			return nil
 		}
 
-		result := &Result{Status: "Ok"}
+		result := Result{Status: "Ok"}
 		b, err := json.Marshal(result)
 		if err != nil {
 			fmt.Println(err)
@@ -153,7 +157,7 @@ func deleteValueHandler(stdin io.ReadCloser, stdout io.WriteCloser, stderr io.Wr
 			return nil
 		}
 
-		result := &Result{Status: "Ok"}
+		result := Result{Status: "Ok"}
 		b, err := json.Marshal(result)
 		if err != nil {
 			fmt.Println(err)
@@ -172,4 +176,35 @@ func deleteValueHandler(stdin io.ReadCloser, stdout io.WriteCloser, stderr io.Wr
 
 func deleteValuePruducer(ctx telnet.Context, name string, args ...string) telsh.Handler {
 	return telsh.PromoteHandlerFunc(deleteValueHandler, args...)
+}
+
+func getKeysHandler(stdin io.ReadCloser, stdout io.WriteCloser, stderr io.WriteCloser, args ...string) error {
+	if len(args) == 0 {
+		keys, err := cacheManager.GetKeys()
+		if err != nil {
+			oi.LongWriteString(stdout, "Error occured while collecting cache keys.")
+			return nil
+		}
+
+		result := Result{
+			Status: "ok",
+			Value:  keys,
+		}
+
+		b, err := json.Marshal(result)
+		if err != nil {
+			oi.LongWriteString(stdout, "Error occured while collecting cache keys.")
+			return nil
+		}
+		oi.LongWriteString(stdout, string(b)+"\n\r")
+
+	} else {
+		oi.LongWriteString(stdout, "Command KEYS doesn't consume params.")
+	}
+
+	return nil
+}
+
+func getKeysPruducer(ctx telnet.Context, name string, args ...string) telsh.Handler {
+	return telsh.PromoteHandlerFunc(getKeysHandler, args...)
 }

@@ -13,6 +13,7 @@ type (
 		Set(key string, value interface{}, ttl int64) error
 		Get(key string) (interface{}, int64, bool, error)
 		Delete(key string) error
+		GetKeys() ([]string, error)
 	}
 
 	CacheManager struct {
@@ -57,4 +58,8 @@ func (cm *CacheManager) Set(key string, value interface{}, ttl int64) error {
 
 func (cm *CacheManager) Delete(key string) error {
 	return cm.Provider.Delete(key)
+}
+
+func (cm *CacheManager) GetKeys() ([]string, error) {
+	return cm.Provider.GetKeys()
 }

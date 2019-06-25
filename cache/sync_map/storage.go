@@ -60,3 +60,12 @@ func (s *Storage) Delete(key string) error {
 	s.values.Delete(key)
 	return nil
 }
+
+func (s *Storage) GetKeys() ([]string, error) {
+	keys := make([]string, 0)
+	s.values.Range(func(k, v interface{}) bool {
+		keys = append(keys, k.(string))
+		return true
+	})
+	return keys, nil
+}

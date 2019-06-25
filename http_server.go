@@ -39,8 +39,7 @@ func startHTTPServer() {
 	e.GET("/:key", getValue)
 	e.POST("/", setValue)
 	e.DELETE("/:key", deleteValue)
-
-	// e.Post("/invalidate_cache", invalidateCache)s
+	e.GET("/keys", getAllKeys)
 
 	// Start server
 	address := fmt.Sprintf("%s:%s", *config.ServerIP, *config.ServerPort)
@@ -49,6 +48,18 @@ func startHTTPServer() {
 
 func healthCheck(c echo.Context) error {
 	return successResponse(c, "")
+}
+
+func getAllKeys(c echo.Context) error {
+	keys, err := cacheManager.GetKeys()
+	if err != nil {
+		return errorResponse(c, "Error occured while collecting cache keys.")
+	}
+
+	return c.JSON(http.StatusOK, Response{
+		Status: "ok",
+		Value:  keys,
+	})
 }
 
 func getValue(c echo.Context) error {
