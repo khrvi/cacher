@@ -16,8 +16,16 @@ Flags:
       --auth_token=AUTH_TOKEN   Bearer Authentication Token.
   -t, --cache_type="mutex-map"  Select cache implementation.
       --version                 Show application version.
+```
 
+## Run HTTP server
+```
 > ./cacher -t sync-map --auth_token 0123456789
+```
+
+## Run Telnet server
+```
+> ./cacher -t sync-map -i telnet -p 5555
 ```
 
 ## Run test
@@ -29,6 +37,43 @@ Flags:
 ```
 > ./Makefile bench
 ```
+
+## Build CLI
+```
+> ./Makefile cacher_cli
+> ./cacher_cli --help  
+usage: cacher-cli [<flags>] <command> [<args> ...]
+
+CLI for Cacher application.
+
+Flags:
+  --help     Show context-sensitive help (also try --help-long and --help-man).
+  --version  Show application version.
+
+Commands:
+  help [<command>...]
+    Show help.
+
+  telnet [<host>] [<port>]
+    Run Telnet client and connect with Telnet Cacher server
+
+  http --auth_token=AUTH_TOKEN [<flags>] <command> [<key>] [<value>] [<ttl>]
+    Use http client to send commands to Cacher.
+
+> ./cacher -t sync-map --auth_token 0123456789
+```
+
+## Run HTTP server
+```
+> ./cacher_cli http -t 00000 set key {\"test\":10} 3600
+> ./cacher_cli http -t 00000 get key
+```
+
+## Run Telnet client
+```
+./cacher_cli telnet
+```
+
 
 ## HTTP interface (CURL examples):
 

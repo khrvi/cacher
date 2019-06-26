@@ -6,6 +6,9 @@ default: $(NAME)
 $(NAME): *.go */*.go glide.*
 	go build -o $(NAME) .
 
+cacher_cli: ./cli/*.go ./cli/*/*.go
+	go build -o cacher_cli ./cli/.
+
 test: 
 	go test ./cache
 

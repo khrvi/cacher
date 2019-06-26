@@ -1,5 +1,5 @@
-hash: 6cfa42a7300e807aa711d79e72c01243d6f9bc024a4ce50d1c4a2cccd985b0cc
-updated: 2019-06-25T04:20:11.498547+03:00
+hash: 36edfd4f7970a8e7c24186ace32bfcd9a048308e93ea6b30f88ade5d8f9cfc67
+updated: 2019-06-26T01:44:15.070319+03:00
 imports:
 - name: github.com/alecthomas/template
   version: b867cc6ab45cece8143cfcc6fc9c77cf3f2c23c0
@@ -7,6 +7,8 @@ imports:
   - parse
 - name: github.com/alecthomas/units
   version: 6b4e7dc5e3143b85ea77909c72caf89416fc2915
+- name: github.com/ddliu/go-httpclient
+  version: 095b03c7bbcc67af3414611b53c2bc2e75529269
 - name: github.com/dgrijalva/jwt-go
   version: 5e25c22bd5d6de03265bbe5462dcd162f85046f6
 - name: github.com/labstack/echo
@@ -53,4 +55,12 @@ imports:
   - unix
 - name: gopkg.in/alecthomas/kingpin.v2
   version: 947dcec5ba9c011838740e680966fd7087a71d0d
-testImports: []
+testImports:
+- name: github.com/davecgh/go-spew
+  version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9
+  subpackages:
+  - spew
+- name: github.com/pmezard/go-difflib
+  version: d8ed2627bdf02c080bf22230dbb337003b7aba2d
+  subpackages:
+  - difflib
