@@ -11,3 +11,7 @@ import:
   - assert
 - package: github.com/ddliu/go-httpclient
   version: ^0.6.2
+- package: github.com/syndtr/goleveldb
+  version: ^1.0.0
+  subpackages:
+  - leveldb

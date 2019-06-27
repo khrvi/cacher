@@ -26,11 +26,14 @@ var (
 			Default("mutex-map").
 			HintOptions("mutex-map", "sync-map").
 			String()
+	CDBEnabled = app.Flag("cdb", "Enable or disable save on disk using CDB.").
+			Default("true").
+			Bool()
+
+	CDBPeriod = app.Flag("cdb_period", "Period in seconds of dumping data to CDB.").Default("60").Int()
 )
 
 func init() {
-	// kingpin.Parse()
-	// Parse command line
 	app.Version(version)
 	app.Parse(os.Args[1:])
 	switch *Interface {

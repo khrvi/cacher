@@ -15,7 +15,10 @@ Flags:
   -p, --port="1323"             Server port.
       --auth_token=AUTH_TOKEN   Bearer Authentication Token.
   -t, --cache_type="mutex-map"  Select cache implementation.
+      --cdb                     Enable or disable save on disk using CDB.
+      --cdb_period=60           Period in seconds of dumping data to CDB.
       --version                 Show application version.
+
 ```
 
 ## Run HTTP server
@@ -72,6 +75,18 @@ Commands:
 ## Run Telnet client
 ```
 ./cacher_cli telnet
+```
+
+## Cacher Persistence
+Cacher persistance implemented by snapshoting In-memory cache to disk at specified intervals. By default CDB is enabled with interval 60 secs.
+Managing CDB and dumping interval could be changed using cli flags.
+In case if CDB is enabled and interval is 0 then every single Write/Delete Cacher operation will be immediately saved to CDB.
+In case if CDB is enabled and interval is greater than 0 then Batch Write to disk will be performed.
+CDB is using LevelDB as key-value disk storage.
+
+In order to disable dumping data to disk could be used the following command:
+```
+./cacher -i telnet -p 5555 --no-cdb
 ```
 
 

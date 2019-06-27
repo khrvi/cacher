@@ -1,8 +1,10 @@
 package cache
 
 import (
+	"encoding/json"
 	"fmt"
 
+	"./cdb"
 	mm "./mutex_map"
 	sm "./sync_map"
 )
@@ -17,7 +19,8 @@ type (
 	}
 
 	CacheManager struct {
-		Provider Cache
+		Provider   Cache
+		CDBEnabled bool
 	}
 
 	CacheManagerError struct {
@@ -30,18 +33,46 @@ func (cme CacheManagerError) Error() string {
 }
 
 // New returns a new resources cache.
-func New(cacheType string) (*CacheManager, error) {
-	if cacheType == "mutex-map" {
-		return &CacheManager{
-			Provider: mm.New(),
-		}, nil
-	} else if cacheType == "sync-map" {
-		return &CacheManager{
-			Provider: sm.New(),
-		}, nil
+func New(cacheType string, CDBEnabled bool, CDBPeriod int) (manager *CacheManager, err error) {
+	if CDBEnabled {
+		cdb.Init(CDBPeriod)
 	}
 
-	return nil, CacheManagerError{cacheType}
+	if cacheType == "mutex-map" {
+		manager = &CacheManager{
+			Provider: mm.New(),
+		}
+	} else if cacheType == "sync-map" {
+		manager = &CacheManager{
+			Provider: sm.New(),
+		}
+	} else {
+		return nil, CacheManagerError{cacheType}
+	}
+
+	if CDBEnabled {
+		manager.CDBEnabled = true
+		RestoreTo(manager)
+	}
+	return manager, nil
+}
+
+func RestoreTo(cm *CacheManager) {
+	iter := cdb.GetIterator()
+	for iter.Next() {
+		record := new(cdb.Record)
+		err := json.Unmarshal([]byte(iter.Value()), &record)
+		if err != nil {
+			fmt.Printf("Error while unmarshaling leveldb message: %s", err)
+		}
+
+		cm.Set(string(iter.Key()), record.Value, record.ExpiredAt)
+	}
+	iter.Release()
+	err := iter.Error()
+	if err != nil {
+		fmt.Printf("Error while releasing leveldb iterator: %s", err)
+	}
 }
 
 func (cm *CacheManager) Get(key string) (interface{}, int64, bool, error) {
@@ -52,14 +83,28 @@ func (cm *CacheManager) Get(key string) (interface{}, int64, bool, error) {
 	return value, expiredAt, found, err
 }
 
-func (cm *CacheManager) Set(key string, value interface{}, ttl int64) error {
-	return cm.Provider.Set(key, value, ttl)
+func (cm *CacheManager) Set(key string, value interface{}, ttl int64) (err error) {
+	err = cm.Provider.Set(key, value, ttl)
+	if cm.CDBEnabled {
+		cdb.Set(key, value, ttl)
+	}
+	//TODO: retry in case of error
+	return err
 }
 
-func (cm *CacheManager) Delete(key string) error {
-	return cm.Provider.Delete(key)
+func (cm *CacheManager) Delete(key string) (err error) {
+	err = cm.Provider.Delete(key)
+	if cm.CDBEnabled {
+		cdb.Delete(key)
+	}
+	//TODO: retry in case of error
+	return err
 }
 
 func (cm *CacheManager) GetKeys() ([]string, error) {
 	return cm.Provider.GetKeys()
+}
+
+func Close() {
+	cdb.Close()
 }

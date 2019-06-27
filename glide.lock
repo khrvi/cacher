@@ -1,5 +1,5 @@
-hash: 36edfd4f7970a8e7c24186ace32bfcd9a048308e93ea6b30f88ade5d8f9cfc67
-updated: 2019-06-26T01:44:15.070319+03:00
+hash: 849cc8f7ecf1349d3368d4753974726f9636e85cb9f979d40ab5c06bf84ec959
+updated: 2019-06-26T18:13:26.995131+03:00
 imports:
 - name: github.com/alecthomas/template
   version: b867cc6ab45cece8143cfcc6fc9c77cf3f2c23c0
@@ -11,6 +11,8 @@ imports:
   version: 095b03c7bbcc67af3414611b53c2bc2e75529269
 - name: github.com/dgrijalva/jwt-go
   version: 5e25c22bd5d6de03265bbe5462dcd162f85046f6
+- name: github.com/golang/snappy
+  version: 553a641470496b2327abcac10b36396bd98e45c9
 - name: github.com/labstack/echo
   version: 38772c686c76b501f94bd6cd5b77f5842e93b559
   subpackages:
@@ -36,6 +38,21 @@ imports:
   version: ffdc059bfe9ce6a4e144ba849dbedead332c6053
   subpackages:
   - assert
+- name: github.com/syndtr/goleveldb
+  version: 100af30d09b58316a56c15eb2ef1c8df57627e74
+  subpackages:
+  - leveldb
+  - leveldb/cache
+  - leveldb/comparer
+  - leveldb/errors
+  - leveldb/filter
+  - leveldb/iterator
+  - leveldb/journal
+  - leveldb/memdb
+  - leveldb/opt
+  - leveldb/storage
+  - leveldb/table
+  - leveldb/util
 - name: github.com/valyala/bytebufferpool
   version: cdfbe9377474227bb42120c1e22fd4433e7f69bf
 - name: github.com/valyala/fasttemplate
