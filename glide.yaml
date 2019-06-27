@@ -15,3 +15,5 @@ import:
   version: ^1.0.0
   subpackages:
   - leveldb
+- package: gopkg.in/natefinch/lumberjack.v2
+  version: ^2.1.0

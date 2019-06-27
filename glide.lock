@@ -1,5 +1,5 @@
-hash: 849cc8f7ecf1349d3368d4753974726f9636e85cb9f979d40ab5c06bf84ec959
-updated: 2019-06-26T18:13:26.995131+03:00
+hash: 405ad4932f9cf76b345fa884a6cf7e208c8c68943fa7b183509629ad6de274d3
+updated: 2019-06-27T13:58:20.765303+03:00
 imports:
 - name: github.com/alecthomas/template
   version: b867cc6ab45cece8143cfcc6fc9c77cf3f2c23c0
@@ -72,6 +72,8 @@ imports:
   - unix
 - name: gopkg.in/alecthomas/kingpin.v2
   version: 947dcec5ba9c011838740e680966fd7087a71d0d
+- name: gopkg.in/natefinch/lumberjack.v2
+  version: a96e63847dc3c67d17befa69c303767e2f84e54f
 testImports:
 - name: github.com/davecgh/go-spew
   version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9

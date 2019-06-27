@@ -69,7 +69,7 @@ func getValue(c echo.Context) error {
 		errorMessage := fmt.Sprintf("Error occured while Get value '%s' from cache.", key)
 		return errorResponse(c, errorMessage)
 	}
-	fmt.Printf("Search for key = %s, %b", value, found)
+
 	if !found {
 		errorMessage := fmt.Sprintf("Key '%s' not found in cache.", key)
 		return errorResponse(c, errorMessage)
@@ -95,7 +95,6 @@ func setValue(c echo.Context) error {
 
 	error := cacheManager.Set(payload.Key, payload.Value, payload.TTL)
 	if error != nil {
-		// fmt.Printf("Error occured while adding new key/value pair: %s - %s", key, value)
 		errorMessage := fmt.Sprintf("Error occured while adding new key/value pair: %s - %s", payload.Key, payload.Value)
 		return errorResponse(c, errorMessage)
 	}

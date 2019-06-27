@@ -1,6 +1,7 @@
 package leveldb
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/syndtr/goleveldb/leveldb"
@@ -24,7 +25,7 @@ func InitConnection() {
 	for iter.Next() {
 		counter += 1
 	}
-	log.Printf("LevelDB contains %d records...", counter)
+	log.Printf("CDB contains %d records...", counter)
 }
 
 func ReadKey(key string) (val string, err error) {
@@ -70,6 +71,7 @@ func Iterator() iterator.Iterator {
 }
 
 func SaveBatch() (err error) {
+	fmt.Println("Saving batch of operations...")
 	err = dbi.Write(batch, nil)
 	if err != nil {
 		return err
@@ -80,10 +82,6 @@ func SaveBatch() (err error) {
 }
 
 func Close() {
-	if batch != nil {
-		// save existing batch before exist
-		SaveBatch()
-	}
 	if dbi != nil {
 		dbi.Close()
 	}

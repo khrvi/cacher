@@ -14,7 +14,11 @@ type Record struct {
 	ExpiredAt int64
 }
 
-var directWrite bool
+var (
+	directWrite bool
+	// used this odd key for storing timestamp at the same db, or create a new one
+	updatedAtTimestampKey = "--updated_at_timestamp--"
+)
 
 func Init(period int) {
 	leveldb.InitConnection()
@@ -34,7 +38,7 @@ func initPeriodicBackup(period int) {
 	for {
 		select {
 		case <-backupTicker.C:
-			fmt.Println("Saving batch of operations...")
+			refreshUpdatedAtTimestamp()
 			err := leveldb.SaveBatch()
 			if err != nil {
 				fmt.Printf("Error while saving batch: %s", err)
@@ -55,12 +59,13 @@ func Set(key string, value interface{}, ttl int64) (err error) {
 	}
 
 	if directWrite == true {
+		refreshUpdatedAtTimestamp()
 		err = leveldb.WriteKey(key, data)
 	} else {
 		err = leveldb.AddToBatch(key, data)
 	}
 	if err != nil {
-		fmt.Printf("Can't save message to leveldb. %s", err)
+		fmt.Printf("Can't save message to CDB. %s", err)
 		return err
 	}
 	return nil
@@ -72,15 +77,41 @@ func Delete(key string) (err error) {
 		return err
 	}
 	if directWrite == true {
+		refreshUpdatedAtTimestamp()
 		err = leveldb.DelKey(data)
 	} else {
 		err = leveldb.RemoveFromBatch(data)
 	}
 
 	if err != nil {
-		fmt.Printf("Error while cleaning leveldb key '%s': %s", key, err)
+		fmt.Printf("Error while cleaning CDB key '%s': %s", key, err)
 	}
 	return nil
+}
+
+func refreshUpdatedAtTimestamp() {
+	Set(updatedAtTimestampKey, time.Now().Unix(), 0)
+}
+
+func GetUpdatedAtTimestamp() int64 {
+	value, err := leveldb.ReadKey(updatedAtTimestampKey)
+	if err != nil {
+		if !leveldb.IsNotFound(err) {
+			fmt.Println("UpdatedAtTimestamp is not found.")
+		} else {
+			fmt.Printf("Error while getting updatedAtTimestampKey from CDB: %s", err)
+		}
+
+		return 0
+	} else {
+		record := new(Record)
+		err := json.Unmarshal([]byte(value), &record)
+		if err != nil {
+			fmt.Printf("Error while unmarshaling CDB message: %s", err)
+		}
+
+		return int64(record.Value.(float64))
+	}
 }
 
 func GetIterator() iterator.Iterator {
@@ -88,5 +119,14 @@ func GetIterator() iterator.Iterator {
 }
 
 func Close() {
+	if directWrite == false {
+		refreshUpdatedAtTimestamp()
+		// save existing batch before exist
+		err := leveldb.SaveBatch()
+		if err != nil {
+			fmt.Printf("Error while saving batch: %s", err)
+		}
+
+	}
 	leveldb.Close()
 }

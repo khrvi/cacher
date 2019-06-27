@@ -3,7 +3,9 @@ package cache
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 
+	"./aof"
 	"./cdb"
 	mm "./mutex_map"
 	sm "./sync_map"
@@ -21,6 +23,8 @@ type (
 	CacheManager struct {
 		Provider   Cache
 		CDBEnabled bool
+		// prevent doubling records in AOF while restoring
+		RestoreMode bool
 	}
 
 	CacheManagerError struct {
@@ -33,9 +37,12 @@ func (cme CacheManagerError) Error() string {
 }
 
 // New returns a new resources cache.
-func New(cacheType string, CDBEnabled bool, CDBPeriod int) (manager *CacheManager, err error) {
+func New(cacheType string, CDBEnabled bool, CDBPeriod int, AOFEnabled bool) (manager *CacheManager, err error) {
 	if CDBEnabled {
 		cdb.Init(CDBPeriod)
+	}
+	if AOFEnabled {
+		aof.Init()
 	}
 
 	if cacheType == "mutex-map" {
@@ -52,27 +59,60 @@ func New(cacheType string, CDBEnabled bool, CDBPeriod int) (manager *CacheManage
 
 	if CDBEnabled {
 		manager.CDBEnabled = true
-		RestoreTo(manager)
+		restoreFromCDB(manager)
+	}
+
+	if AOFEnabled {
+		restoreFromAOF(manager)
 	}
 	return manager, nil
 }
 
-func RestoreTo(cm *CacheManager) {
+func restoreFromCDB(cm *CacheManager) {
+	cm.RestoreMode = true
+	counter := 0
 	iter := cdb.GetIterator()
 	for iter.Next() {
 		record := new(cdb.Record)
 		err := json.Unmarshal([]byte(iter.Value()), &record)
 		if err != nil {
-			fmt.Printf("Error while unmarshaling leveldb message: %s", err)
+			fmt.Printf("Error while unmarshaling CDB message: %s", err)
 		}
 
 		cm.Set(string(iter.Key()), record.Value, record.ExpiredAt)
+		counter++
 	}
 	iter.Release()
 	err := iter.Error()
 	if err != nil {
-		fmt.Printf("Error while releasing leveldb iterator: %s", err)
+		fmt.Printf("Error while releasing CDB iterator: %s", err)
 	}
+	cm.RestoreMode = false
+	fmt.Printf("Restored %d records from CDB\n", counter)
+}
+
+func restoreFromAOF(cm *CacheManager) {
+	cm.RestoreMode = true
+	counter := 0
+	from := int64(0)
+	if cm.CDBEnabled {
+		from = cdb.GetUpdatedAtTimestamp()
+	}
+
+	listCommands := aof.GetCommands(from)
+	for _, hash := range listCommands {
+		if hash["op"] == "set" {
+			ttl, _ := strconv.Atoi(hash["ttl"])
+			cm.Set(hash["key"], hash["value"], int64(ttl))
+		} else {
+			cm.Delete(hash["key"])
+		}
+
+		counter++
+	}
+
+	cm.RestoreMode = false
+	fmt.Printf("Restored %d operations from AOF\n", counter)
 }
 
 func (cm *CacheManager) Get(key string) (interface{}, int64, bool, error) {
@@ -84,7 +124,17 @@ func (cm *CacheManager) Get(key string) (interface{}, int64, bool, error) {
 }
 
 func (cm *CacheManager) Set(key string, value interface{}, ttl int64) (err error) {
+	if !cm.RestoreMode {
+		aof.Write(key, value, ttl, "pending")
+	}
 	err = cm.Provider.Set(key, value, ttl)
+	if !cm.RestoreMode {
+		if err != nil {
+			aof.Write(key, value, ttl, "failed")
+		} else {
+			aof.Write(key, value, ttl, "completed")
+		}
+	}
 	if cm.CDBEnabled {
 		cdb.Set(key, value, ttl)
 	}
@@ -93,7 +143,17 @@ func (cm *CacheManager) Set(key string, value interface{}, ttl int64) (err error
 }
 
 func (cm *CacheManager) Delete(key string) (err error) {
+	if !cm.RestoreMode {
+		aof.Delete(key, "pending")
+	}
 	err = cm.Provider.Delete(key)
+	if !cm.RestoreMode {
+		if err != nil {
+			aof.Delete(key, "failed")
+		} else {
+			aof.Delete(key, "completed")
+		}
+	}
 	if cm.CDBEnabled {
 		cdb.Delete(key)
 	}

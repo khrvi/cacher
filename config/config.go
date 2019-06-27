@@ -31,6 +31,10 @@ var (
 			Bool()
 
 	CDBPeriod = app.Flag("cdb_period", "Period in seconds of dumping data to CDB.").Default("60").Int()
+
+	AOFEnabled = app.Flag("appendonly", "Enable or disable Append-only file.").
+			Default("true").
+			Bool()
 )
 
 func init() {

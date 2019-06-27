@@ -17,6 +17,7 @@ Flags:
   -t, --cache_type="mutex-map"  Select cache implementation.
       --cdb                     Enable or disable save on disk using CDB.
       --cdb_period=60           Period in seconds of dumping data to CDB.
+      --appendonly              Enable or disable Append-only file.
       --version                 Show application version.
 
 ```
@@ -62,23 +63,18 @@ Commands:
 
   http --auth_token=AUTH_TOKEN [<flags>] <command> [<key>] [<value>] [<ttl>]
     Use http client to send commands to Cacher.
-
-> ./cacher -t sync-map --auth_token 0123456789
 ```
 
 ## Run HTTP server
 ```
-> ./cacher_cli http -t 00000 set key {\"test\":10} 3600
-> ./cacher_cli http -t 00000 get key
-```
-
-## Run Telnet client
-```
-./cacher_cli telnet
+> ./cacher -t sync-map --auth_token 0123456789
 ```
 
 ## Cacher Persistence
-Cacher persistance implemented by snapshoting In-memory cache to disk at specified intervals. By default CDB is enabled with interval 60 secs.
+Cacher persistance implemented using Redis similar approach. There two options how persistance can be provided.
+
+#### CDB
+CDB is implemented by snapshoting in-memory cache to disk at specified intervals. By default CDB is enabled with interval 60 secs.
 Managing CDB and dumping interval could be changed using cli flags.
 In case if CDB is enabled and interval is 0 then every single Write/Delete Cacher operation will be immediately saved to CDB.
 In case if CDB is enabled and interval is greater than 0 then Batch Write to disk will be performed.
@@ -86,7 +82,46 @@ CDB is using LevelDB as key-value disk storage.
 
 In order to disable dumping data to disk could be used the following command:
 ```
-./cacher -i telnet -p 5555 --no-cdb
+> ./cacher -i telnet -p 5555 --no-cdb
+```
+
+#### Append-only file
+AOF works using transaction log where every SET and DELETE operations will be appended to file. It should help to restore
+operations that were initiated but never finished. For example after killing process with 'kill -9'. Situations like CTRL+C
+handled separatelly by catching this signal and hence CDB batch operation has to finish dumping before exit.
+Command to disable AOF:
+```
+> ./cacher -i telnet -p 5555 --no-appendonly
+```
+
+#### CDB + AOF
+Both modes could work together to provide higher durability. If both modes are enabled then restore from CDB processed and after that restore from AOF.
+AOF will restore only commands missed by CDB. In case if only AOF enabled then a full AOF log will be restored to in-memory DB.
+
+
+## CLI examples
+#### Run NTTP client
+Request for value of 'test' key 
+```
+> ./cacher_cli http get test --auth_token 00000
+```
+Set array value
+```
+> ./cacher_cli http set test_array [9,2] --auth_token 00000
+```
+Set string value
+```
+> ./cacher_cli http set test_string \"string\" --auth_token 00000
+```
+
+#### Run Telnet client
+Telnet client works as Standard telnet client in interactive mode.
+Run client
+```
+> ./cacher_cli telnet
+> set test [1,2] 30
+> keys
+> get test
 ```
 
 
