@@ -3,7 +3,7 @@
 NAME=cacher
 
 default: $(NAME)
-$(NAME): *.go */*.go glide.*
+$(NAME): test *.go */*.go glide.*
 	go build -o $(NAME) .
 
 cacher_cli: ./cli/*.go ./cli/*/*.go
