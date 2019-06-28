@@ -73,6 +73,15 @@ Commands:
 > ./cacher -t sync-map --auth_token 0123456789
 ```
 
+## Cache Types
+There are two thread-safe in-memory cache implementations supported by Cacher.
+First of "mutex-map" that uses regular Map data structure in pair with Mutexes to prevent concurrent writes.
+The second implementation is "sync-map" that uses Map from "sync" package - https://golang.org/src/sync/map.go.
+To switch between types could be used CL flag:
+```
+-t, --cache_type="mutex-map"  Select cache implementation.
+```
+
 ## Cacher Persistence
 Cacher persistance implemented using Redis similar approach. There two options how persistance can be provided.
 
