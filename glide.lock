@@ -1,5 +1,5 @@
-hash: 405ad4932f9cf76b345fa884a6cf7e208c8c68943fa7b183509629ad6de274d3
-updated: 2019-06-27T13:58:20.765303+03:00
+hash: 74cceb8a5f6717b172c22600bc19d5eaecec56565e9699dd57cdc7f8896ce92c
+updated: 2019-06-28T03:33:42.69747+03:00
 imports:
 - name: github.com/alecthomas/template
   version: b867cc6ab45cece8143cfcc6fc9c77cf3f2c23c0
@@ -13,6 +13,8 @@ imports:
   version: 5e25c22bd5d6de03265bbe5462dcd162f85046f6
 - name: github.com/golang/snappy
   version: 553a641470496b2327abcac10b36396bd98e45c9
+- name: github.com/google/logger
+  version: 7047ffcb7339f3f59be32de74a92217cb17cb40c
 - name: github.com/labstack/echo
   version: 38772c686c76b501f94bd6cd5b77f5842e93b559
   subpackages:

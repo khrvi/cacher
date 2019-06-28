@@ -48,8 +48,9 @@ func startTelNetServer() {
 	shellHandler.Register(commandName, commandProducer)
 
 	address := fmt.Sprintf("%s:%s", *config.ServerIP, *config.ServerPort)
+	log.Printf("Telnet server launched: %s", address)
 	if err := telnet.ListenAndServe(address, shellHandler); nil != err {
-		panic(err)
+		log.Fatalf("Error while launching Telnet server: %s", err)
 	}
 }
 
@@ -94,6 +95,7 @@ func getValueHandler(stdin io.ReadCloser, stdout io.WriteCloser, stderr io.Write
 }
 
 func getValuePruducer(ctx telnet.Context, name string, args ...string) telsh.Handler {
+	log.Printf("Telnet GET with args: %+v", args)
 	return telsh.PromoteHandlerFunc(getValueHandler, args...)
 }
 
@@ -143,6 +145,7 @@ func setValueHandler(stdin io.ReadCloser, stdout io.WriteCloser, stderr io.Write
 }
 
 func setValuePruducer(ctx telnet.Context, name string, args ...string) telsh.Handler {
+	log.Printf("Telnet SET with args: %+v", args)
 	return telsh.PromoteHandlerFunc(setValueHandler, args...)
 }
 
@@ -175,6 +178,7 @@ func deleteValueHandler(stdin io.ReadCloser, stdout io.WriteCloser, stderr io.Wr
 }
 
 func deleteValuePruducer(ctx telnet.Context, name string, args ...string) telsh.Handler {
+	log.Printf("Telnet DELETE with args: %+v", args)
 	return telsh.PromoteHandlerFunc(deleteValueHandler, args...)
 }
 
@@ -206,5 +210,6 @@ func getKeysHandler(stdin io.ReadCloser, stdout io.WriteCloser, stderr io.WriteC
 }
 
 func getKeysPruducer(ctx telnet.Context, name string, args ...string) telsh.Handler {
+	log.Printf("Telnet KEYS with args: %+v", args)
 	return telsh.PromoteHandlerFunc(getKeysHandler, args...)
 }

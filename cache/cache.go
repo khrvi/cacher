@@ -3,6 +3,7 @@ package cache
 import (
 	"encoding/json"
 	"fmt"
+	l "log"
 	"strconv"
 
 	"./aof"
@@ -32,14 +33,17 @@ type (
 	}
 )
 
+var log *l.Logger
+
 func (cme CacheManagerError) Error() string {
 	return fmt.Sprintf("Cache Provider '%s' is invalid.", cme.cacheType)
 }
 
 // New returns a new resources cache.
-func New(cacheType string, CDBEnabled bool, CDBPeriod int, AOFEnabled bool) (manager *CacheManager, err error) {
+func New(cacheType string, logger *l.Logger, CDBEnabled bool, CDBPeriod int, AOFEnabled bool) (manager *CacheManager, err error) {
+	log = logger
 	if CDBEnabled {
-		cdb.Init(CDBPeriod)
+		cdb.Init(CDBPeriod, log)
 	}
 	if AOFEnabled {
 		aof.Init()
@@ -76,7 +80,7 @@ func restoreFromCDB(cm *CacheManager) {
 		record := new(cdb.Record)
 		err := json.Unmarshal([]byte(iter.Value()), &record)
 		if err != nil {
-			fmt.Printf("Error while unmarshaling CDB message: %s", err)
+			log.Printf("Error while unmarshaling CDB message: %s", err)
 		}
 
 		cm.Set(string(iter.Key()), record.Value, record.ExpiredAt)
@@ -85,10 +89,10 @@ func restoreFromCDB(cm *CacheManager) {
 	iter.Release()
 	err := iter.Error()
 	if err != nil {
-		fmt.Printf("Error while releasing CDB iterator: %s", err)
+		log.Printf("Error while releasing CDB iterator: %s", err)
 	}
 	cm.RestoreMode = false
-	fmt.Printf("Restored %d records from CDB\n", counter)
+	log.Printf("Restored %d records from CDB\n", counter)
 }
 
 func restoreFromAOF(cm *CacheManager) {
@@ -112,13 +116,13 @@ func restoreFromAOF(cm *CacheManager) {
 	}
 
 	cm.RestoreMode = false
-	fmt.Printf("Restored %d operations from AOF\n", counter)
+	log.Printf("Restored %d operations from AOF\n", counter)
 }
 
 func (cm *CacheManager) Get(key string) (interface{}, int64, bool, error) {
 	value, expiredAt, found, err := cm.Provider.Get(key)
 	if err != nil {
-		// log error here
+		log.Fatalf("Error while getting value for key %s: %s", key, err)
 	}
 	return value, expiredAt, found, err
 }

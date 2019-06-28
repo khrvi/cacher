@@ -27,8 +27,9 @@ type (
 
 func startHTTPServer() {
 	e := echo.New()
-
-	e.Use(middleware.Logger())
+	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Output: log.Writer(),
+	}))
 	e.Use(middleware.Recover())
 	e.Use(middleware.KeyAuth(func(key string, c echo.Context) (bool, error) {
 		return key == *config.AuthToken, nil
@@ -106,7 +107,7 @@ func deleteValue(c echo.Context) error {
 	key := c.Param("key")
 	error := cacheManager.Delete(key)
 	if error != nil {
-		fmt.Printf("Error occured while deleting key: %s", key)
+		log.Printf("Error occured while deleting key: %s", key)
 	}
 	return successResponse(c, "")
 }
@@ -120,6 +121,7 @@ func successResponse(c echo.Context, value string) error {
 }
 
 func errorResponse(c echo.Context, message string) error {
+	log.Fatalln(message)
 	return c.JSON(http.StatusBadRequest, Response{
 		Status:       "error",
 		ErrorMessage: message,

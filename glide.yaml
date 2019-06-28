@@ -17,3 +17,5 @@ import:
   - leveldb
 - package: gopkg.in/natefinch/lumberjack.v2
   version: ^2.1.0
+- package: github.com/google/logger
+  version: ^1.0.1

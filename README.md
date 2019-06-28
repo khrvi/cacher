@@ -21,6 +21,9 @@ Flags:
       --version                 Show application version.
 
 ```
+#### Binaries
+There are two binary files "cacher" and "cacher_cli" at the root of git repo. Those are pre-compiled binaries of Cacher app and Cacher CLI can can be used be for quick launch apps w/o building them.
+
 
 ## Run HTTP server
 ```
@@ -98,6 +101,8 @@ Command to disable AOF:
 Both modes could work together to provide higher durability. If both modes are enabled then restore from CDB processed and after that restore from AOF.
 AOF will restore only commands missed by CDB. In case if only AOF enabled then a full AOF log will be restored to in-memory DB.
 
+## Logging
+In addition to AOF the Cacher uses own log file for tracking actions and errors. It located at './log/cacher.log'
 
 ## CLI examples
 #### Run NTTP client

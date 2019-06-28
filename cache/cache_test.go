@@ -16,19 +16,19 @@ type (
 
 func TestNew(t *testing.T) {
 	for _, name := range []string{"sync-map", "mutex-map"} {
-		_, err := New(name, false, 60, false)
+		_, err := New(name, log, false, 60, false)
 		if err != nil {
 			t.Fatalf("Provider '%s' failed to init: %v", name, err)
 		}
 	}
 
-	provider, err := New("wrong_provider", false, 60, false)
+	provider, err := New("wrong_provider", log, false, 60, false)
 	assert.Nil(t, provider)
 	assert.Equal(t, "Cache Provider 'wrong_provider' is invalid.", err.Error())
 }
 
 func TestGet(t *testing.T) {
-	provider, _ := New("sync-map", false, 60, false)
+	provider, _ := New("sync-map", log, false, 60, false)
 	// test missed key
 	value, expiredAt, found, err := provider.Get("test")
 	assert.Nil(t, value)
@@ -50,7 +50,7 @@ func TestGet(t *testing.T) {
 }
 
 func TestSet(t *testing.T) {
-	provider, _ := New("sync-map", false, 60, false)
+	provider, _ := New("sync-map", log, false, 60, false)
 
 	// set int value
 	err := provider.Set("test", float64(100), 0)
@@ -124,7 +124,7 @@ func TestSet(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	provider, _ := New("sync-map", false, 60, false)
+	provider, _ := New("sync-map", log, false, 60, false)
 
 	// delete nonexistent keys
 	_, _, found, _ := provider.Get("test")
@@ -152,7 +152,7 @@ func TestDelete(t *testing.T) {
 }
 
 func TestGetKeys(t *testing.T) {
-	provider, _ := New("sync-map", false, 60, false)
+	provider, _ := New("sync-map", log, false, 60, false)
 	// check that cache is empty
 	keys, err := provider.GetKeys()
 	if err != nil {
@@ -178,7 +178,7 @@ func TestGetKeys(t *testing.T) {
 	assert.ElementsMatch(t, []string{"test", "test_array"}, keys)
 }
 func BenchmarkGetMutexMap(b *testing.B) {
-	provider, _ := New("mutex-map", false, 60, false)
+	provider, _ := New("mutex-map", log, false, 60, false)
 	provider.Set("test_int", 1, 0)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -187,7 +187,7 @@ func BenchmarkGetMutexMap(b *testing.B) {
 }
 
 func BenchmarkSetMutexMap(b *testing.B) {
-	provider, _ := New("mutex-map", false, 60, false)
+	provider, _ := New("mutex-map", log, false, 60, false)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		provider.Set("test_int_"+strconv.Itoa(i), i, 0)
@@ -195,7 +195,7 @@ func BenchmarkSetMutexMap(b *testing.B) {
 }
 
 func BenchmarkDeleteMutexMap(b *testing.B) {
-	provider, _ := New("mutex-map", false, 60, false)
+	provider, _ := New("mutex-map", log, false, 60, false)
 	for i := 0; i < b.N; i++ {
 		provider.Set("test_int_"+strconv.Itoa(i), i, 0)
 	}
@@ -206,7 +206,7 @@ func BenchmarkDeleteMutexMap(b *testing.B) {
 }
 
 func BenchmarkGetKeysMutexMap(b *testing.B) {
-	provider, _ := New("mutex-map", false, 60, false)
+	provider, _ := New("mutex-map", log, false, 60, false)
 	for i := 0; i < b.N; i++ {
 		provider.Set("test_int_"+strconv.Itoa(i), i, 0)
 	}
@@ -217,7 +217,7 @@ func BenchmarkGetKeysMutexMap(b *testing.B) {
 }
 
 func BenchmarkGetSyncMap(b *testing.B) {
-	provider, _ := New("sync-map", false, 60, false)
+	provider, _ := New("sync-map", log, false, 60, false)
 	provider.Set("test_int", 1, 0)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -226,7 +226,7 @@ func BenchmarkGetSyncMap(b *testing.B) {
 }
 
 func BenchmarkSetSyncMap(b *testing.B) {
-	provider, _ := New("sync-map", false, 60, false)
+	provider, _ := New("sync-map", log, false, 60, false)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		provider.Set("test_int_"+strconv.Itoa(i), i, 0)
@@ -234,7 +234,7 @@ func BenchmarkSetSyncMap(b *testing.B) {
 }
 
 func BenchmarkDeleteSyncMap(b *testing.B) {
-	provider, _ := New("sync-map", false, 60, false)
+	provider, _ := New("sync-map", log, false, 60, false)
 	for i := 0; i < b.N; i++ {
 		provider.Set("test_int_"+strconv.Itoa(i), i, 0)
 	}
@@ -245,7 +245,7 @@ func BenchmarkDeleteSyncMap(b *testing.B) {
 }
 
 func BenchmarkGetKeysSyncMap(b *testing.B) {
-	provider, _ := New("sync-map", false, 60, false)
+	provider, _ := New("sync-map", log, false, 60, false)
 	for i := 0; i < b.N; i++ {
 		provider.Set("test_int_"+strconv.Itoa(i), i, 0)
 	}

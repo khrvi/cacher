@@ -2,7 +2,8 @@ package cdb
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
+	l "log"
 	"time"
 
 	"./leveldb"
@@ -20,7 +21,7 @@ var (
 	updatedAtTimestampKey = "--updated_at_timestamp--"
 )
 
-func Init(period int) {
+func Init(period int, log *l.Logger) {
 	leveldb.InitConnection()
 
 	if period > 0 {
@@ -41,7 +42,7 @@ func initPeriodicBackup(period int) {
 			refreshUpdatedAtTimestamp()
 			err := leveldb.SaveBatch()
 			if err != nil {
-				fmt.Printf("Error while saving batch: %s", err)
+				log.Fatalf("Error while saving batch: %s", err)
 			}
 		}
 	}
@@ -65,7 +66,7 @@ func Set(key string, value interface{}, ttl int64) (err error) {
 		err = leveldb.AddToBatch(key, data)
 	}
 	if err != nil {
-		fmt.Printf("Can't save message to CDB. %s", err)
+		log.Fatalf("Can't save message to CDB. %s", err)
 		return err
 	}
 	return nil
@@ -84,7 +85,7 @@ func Delete(key string) (err error) {
 	}
 
 	if err != nil {
-		fmt.Printf("Error while cleaning CDB key '%s': %s", key, err)
+		log.Fatalf("Error while cleaning CDB key '%s': %s", key, err)
 	}
 	return nil
 }
@@ -97,9 +98,9 @@ func GetUpdatedAtTimestamp() int64 {
 	value, err := leveldb.ReadKey(updatedAtTimestampKey)
 	if err != nil {
 		if !leveldb.IsNotFound(err) {
-			fmt.Println("UpdatedAtTimestamp is not found.")
+			log.Println("UpdatedAtTimestamp is not found.")
 		} else {
-			fmt.Printf("Error while getting updatedAtTimestampKey from CDB: %s", err)
+			log.Fatalf("Error while getting updatedAtTimestampKey from CDB: %s", err)
 		}
 
 		return 0
@@ -107,7 +108,7 @@ func GetUpdatedAtTimestamp() int64 {
 		record := new(Record)
 		err := json.Unmarshal([]byte(value), &record)
 		if err != nil {
-			fmt.Printf("Error while unmarshaling CDB message: %s", err)
+			log.Fatalf("Error while unmarshaling CDB message: %s", err)
 		}
 
 		return int64(record.Value.(float64))
@@ -124,7 +125,7 @@ func Close() {
 		// save existing batch before exist
 		err := leveldb.SaveBatch()
 		if err != nil {
-			fmt.Printf("Error while saving batch: %s", err)
+			log.Fatalf("Error while saving batch: %s", err)
 		}
 
 	}
