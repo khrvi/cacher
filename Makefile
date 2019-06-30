@@ -10,7 +10,7 @@ cacher_cli: ./cli/*.go ./cli/*/*.go
 	go build -o cacher_cli ./cli/.
 
 test: 
-	go test ./cache
+	go test . ./cache
 
 bench: 
 	go test ./cache -bench=.

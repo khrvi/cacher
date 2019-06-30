@@ -121,7 +121,7 @@ func successResponse(c echo.Context, value string) error {
 }
 
 func errorResponse(c echo.Context, message string) error {
-	log.Fatalln(message)
+	log.Println(message)
 	return c.JSON(http.StatusBadRequest, Response{
 		Status:       "error",
 		ErrorMessage: message,
